@@ -1,1 +1,14 @@
+This is a basic "hello world" bootloader, which just prints the string.
+Its functionality is limited to printing a string and will not be able to load a kernel into memory.
+
+How to use?
+        make run 
+
+        - This will compile the bootloader and run on qemu
+
+What happens here?
+1. BIOS loads first 512 bytes from disk into memory at 0x7C00
+2. CPU starts to execute from 0x7C00 in 16-bit real mode
+3. int 0x10 (BIOS interrupt 0x10) displays text on screen 
+4. Boot sector ends with required signature 0xAA55
 
