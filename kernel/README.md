@@ -6,12 +6,14 @@ This is a Minimal kernel that will boot on QEMU.
 ### 1. Install Cross-Compiler (i686-elf-gcc)
 You MUST use a cross-compiler for kernel development. 
 
+#### Install dependencies
 ```
-# Install dependencies
 sudo apt update
 sudo apt install build-essential bison flex libgmp3-dev libmpc-dev libmpfr-dev texinfo
+```
 
-# Download and build binutils
+#### Download and build binutils
+```
 wget https://ftp.gnu.org/gnu/binutils/binutils-2.42.tar.xz
 tar -xf binutils-2.42.tar.xz
 mkdir binutils-2.42-build
@@ -20,8 +22,9 @@ cd binutils-2.42-build
 make
 make install
 cd ..
-
-# Download and build GCC
+```
+#### Download and build GCC
+```
 wget https://ftp.gnu.org/gnu/gcc/gcc-14.1.0/gcc-14.1.0.tar.xz
 tar -xzf gcc-14.1.0.tar.xz
 mkdir gcc-14.1.0-build
@@ -32,12 +35,12 @@ make all-target-libgcc
 make install-gcc
 make install-target-libgcc
 cd ..
-
-# Add to PATH
+```
+#### Add to PATH
+```
 export PATH="$HOME/cross/bin:$PATH"
 # Add this line to your ~/.bashrc or ~/.profile to make it permanent
 echo 'export PATH="$HOME/cross/bin:$PATH"' >> ~/.bashrc
-
 ```
 
 ## Minimal x86 Kernel
@@ -53,9 +56,9 @@ echo 'export PATH="$HOME/cross/bin:$PATH"' >> ~/.bashrc
 
 ### Quick Start
 
-    1. Install QEMU: sudo apt install qemu-system-x86
-    2. Build: make
-    3. Run: 
+  1. Install QEMU: sudo apt install qemu-system-x86
+  2. Build: make
+  3. Run: 
         ```
       make run        # Run in QEMU
       make run-serial # Run with serial debugging
@@ -65,12 +68,14 @@ echo 'export PATH="$HOME/cross/bin:$PATH"' >> ~/.bashrc
         ```
 
 ### Files
+  1. boot.s - Assembly bootstrap code
+  2. kernel.c - Main kernel implementation
+  3. linker.ld - Linker script
+  4. Makefile - Build system
+  5. grub.cfg - GRUB configuration
 
-    boot.s - Assembly bootstrap code
-    kernel.c - Main kernel implementation
-    linker.ld - Linker script
-    Makefile - Build system
-    grub.cfg - GRUB configuration
+## What is happening here?
+
 
 
 
