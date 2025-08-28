@@ -1,8 +1,9 @@
 // kernel.c - Main kernel implementation with VGA and serial output
 
-#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
+
+#include "../advanced/hal/hal.h"
 
 // Check if the compiler thinks we're targeting the wrong OS
 #if defined(__linux__)
@@ -193,48 +194,39 @@ void kprintf(const char* format, ...) {
 }
 
 /* Kernel Main Function */
+/* Main kernel entry point */
 void kernel_main(void) {
-    // Initialize terminal interface
+    /* Initialize terminal interface */
     terminal_initialize();
-
-    // Initialize serial port for debugging
-    serial_init();
-
-    // Set terminal colors
-    terminal_setcolor(vga_entry_color(VGA_COLOR_LIGHT_GREEN, VGA_COLOR_BLACK));
-
-    // Print welcome messages
-    kprintf("Hello, Kernel World!\n");
-    kprintf("Welcome to your minimal x86 kernel!\n\n");
-
-    // Show some system information
-    terminal_setcolor(vga_entry_color(VGA_COLOR_LIGHT_CYAN, VGA_COLOR_BLACK));
-    kprintf("Kernel Features:\n");
-    kprintf("- VGA text mode output\n");
-    kprintf("- Serial debugging support\n");
-    kprintf("- Basic terminal with scrolling\n");
-    kprintf("- Multiboot compliance\n\n");
-
-    // Change colors and show a colorful message
-    terminal_setcolor(vga_entry_color(VGA_COLOR_LIGHT_RED, VGA_COLOR_BLACK));
-    kprintf("This message is in red!\n");
-
-    terminal_setcolor(vga_entry_color(VGA_COLOR_YELLOW, VGA_COLOR_BLACK));
-    kprintf("This message is in yellow!\n\n");
-
-    terminal_setcolor(vga_entry_color(VGA_COLOR_WHITE, VGA_COLOR_BLACK));
-    kprintf("Kernel initialization complete.\n");
-    kprintf("Check QEMU monitor or serial output for debugging info.\n");
-
-    // Send additional debug info to serial port only
-    serial_writestring("\n[DEBUG] Kernel loaded successfully\n");
-    serial_writestring("[DEBUG] VGA buffer at 0xB8000\n");
-    serial_writestring("[DEBUG] Serial COM1 initialized at 0x3F8\n");
-
-    // Infinite loop - keep the kernel running
-    while (1) {
-        // You can add more functionality here
-        // For now, just halt the CPU
-        asm volatile ("hlt");
+    
+    /* Print welcome message */
+    kprintf("Welcome to Meow Kernel!\n");
+    kprintf("===================\n\n");
+    
+    /* Initialize Hardware Abstraction Layer */
+    hal_init();
+    kprintf("\n");
+    
+    kprintf("Kernel successfully booted.\n");
+    kprintf("Hardware Abstraction Layer: ✓ Initialized\n");
+    kprintf("Device Drivers: Loading...\n");
+    kprintf("Memory Management: Setting up...\n");
+    kprintf("System Calls: Preparing interface...\n");
+    kprintf("Resource Management: Starting...\n\n");
+    
+    /* Test HAL functionality */
+    kprintf("Testing HAL functions:\n");
+    kprintf("- Architecture: %s\n", hal_get_arch_string());
+    kprintf("- Total Memory: %u bytes\n", hal_memory_get_total_size());
+    kprintf("- Available Memory: %u bytes\n", hal_memory_get_available_size());
+    kprintf("- CPU Flags: 0x%08X\n", hal_cpu_get_flags());
+    
+    kprintf("\nKernel is now running!\n");
+    kprintf("Ready for next development phase.\n");
+    
+    /* Kernel main loop */
+    while(1) {
+        hal_cpu_halt();
     }
 }
+
