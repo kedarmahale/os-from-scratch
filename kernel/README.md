@@ -1,4 +1,3 @@
-https://www.perplexity.ai/spaces/os-from-scrach-w0kFjvlnQYOsR2Wr2i4iMA
 
 # Minimal Kernel implementation
 
