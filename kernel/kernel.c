@@ -1,22 +1,10 @@
-// kernel.c - Main kernel implementation with VGA and serial output
-
-#include <stddef.h>
-#include <stdint.h>
+/*
+ * kernel.c - Main kernel implementation
+ */
 
 #include "../advanced/hal/hal.h"
 
-// Check if the compiler thinks we're targeting the wrong OS
-#if defined(__linux__)
-#error "You are not using a cross-compiler, you will most certainly run into trouble"
-#endif
-
-// This tutorial will only work for 32-bit x86 targets
-#if !defined(__i386__)
-#error "This tutorial needs to be compiled with a ix86-elf compiler"
-#endif
-
-/* VGA Text Mode Implementation */
-// VGA color constants
+/* VGA color constants */
 enum vga_color {
     VGA_COLOR_BLACK = 0,
     VGA_COLOR_BLUE = 1,
@@ -44,7 +32,7 @@ static inline uint16_t vga_entry(unsigned char uc, uint8_t color) {
     return (uint16_t) uc | (uint16_t) color << 8;
 }
 
-// Simple strlen implementation (since we don't have stdlib)
+/* Simple strlen implementation (since we don't have stdlib) */
 size_t strlen(const char* str) {
     size_t len = 0;
     while (str[len])
@@ -52,7 +40,7 @@ size_t strlen(const char* str) {
     return len;
 }
 
-// VGA buffer dimensions and state
+/* VGA buffer dimensions and state */
 static const size_t VGA_WIDTH = 80;
 static const size_t VGA_HEIGHT = 25;
 
