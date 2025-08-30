@@ -21,33 +21,33 @@ make clean && make iso && make run
 
 ## Directory structure
 
-my-kernel/
-├── boot/                    # Source files
-│   └── boot.S
-├── kernel/
-│   └── kernel.c
-├── advanced/
-│   └── hal/
-├── scripts/
-│   └── linker.ld
-├── build/                   # All build artifacts (safe to delete)
-│   ├── obj/                 # Object files (mirrors source structure)
-│   │   ├── boot/
-│   │   │   └── boot.o
-│   │   ├── kernel/
-│   │   │   └── kernel.o
-│   │   └── advanced/
-│   │       └── hal/
-│   │           ├── hal.o
-│   │           └── x86/
-│   │               └── hal_x86.o
-│   ├── bin/                 # Final binaries
-│   │   └── kernel.bin
-│   ├── iso/                 # ISO building directory
-│   │   └── boot/
-│   │       ├── kernel.bin
-│   │       └── grub/
-│   │           └── grub.cfg
-│   └── mykernel.iso         # Bootable ISO file
-└── Makefile
+MeowKernel/ \
+├── boot/                    # Source files \
+│   └── boot.S \
+├── kernel/ \
+│   └── kernel.c \
+├── advanced/\
+│   └── hal/\
+├── scripts/\
+│   └── linker.ld\
+├── build/                   # All build artifacts (safe to delete) \
+│   ├── obj/                 # Object files (mirrors source structure) \
+│   │   ├── boot/\
+│   │   │   └── boot.o\
+│   │   ├── kernel/\
+│   │   │   └── kernel.o\
+│   │   └── advanced/\
+│   │       └── hal/\
+│   │           ├── hal.o\
+│   │           └── x86/\
+│   │               └── hal_x86.o\
+│   ├── bin/                 # Final binaries\
+│   │   └── kernel.bin\
+│   ├── iso/                 # ISO building directory\
+│   │   └── boot/\
+│   │       ├── kernel.bin\
+│   │       └── grub/\
+│   │           └── grub.cfg\
+│   └── mykernel.iso         # Bootable ISO file\
+└── Makefile\
 
