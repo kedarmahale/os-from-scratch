@@ -1,7 +1,7 @@
 #include "hal.h"
 
-/* Forward declaration for kprintf */
-extern void kprintf(const char* format, ...);
+/* Forward declaration for meow_printf */
+extern void meow_printf(const char* format, ...);
 
 /* Include architecture-specific implementations */
 #ifdef __i386__
@@ -31,8 +31,8 @@ static uint64_t system_ticks = 0;
 
 /* Initialize the HAL */
 void hal_init(void) {
-    kprintf("HAL: Initializing Hardware Abstraction Layer\n");
-    kprintf("HAL: Architecture: %s\n", hal_get_arch_string());
+    meow_printf("HAL: Initializing Hardware Abstraction Layer\n");
+    meow_printf("HAL: Architecture: %s\n", hal_get_arch_string());
     
     /* Initialize architecture-specific components */
     hal_cpu_init();
@@ -40,7 +40,7 @@ void hal_init(void) {
     hal_interrupt_init();
     hal_timer_init(1000); // 1000 Hz timer
     
-    kprintf("HAL: Initialization complete\n");
+    meow_printf("HAL: Initialization complete\n");
 }
 
 /* Architecture detection */

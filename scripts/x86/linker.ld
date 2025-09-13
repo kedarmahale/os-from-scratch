@@ -1,4 +1,4 @@
-/* linker.ld - Linker script for the kernel */
+/* scripts/x86/linker.ld - x86 kernel Linker script */
 
 ENTRY(_start)
 
@@ -42,5 +42,3 @@ SECTIONS
     /* Also provide kernel size calculation */
     _kernel_size = _kernel_end - _kernel_start;
 }
-
-

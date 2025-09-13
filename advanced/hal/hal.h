@@ -53,7 +53,7 @@ void hal_debug_putc(char c);
 void hal_debug_puts(const char* str);
 
 /* Architecture Detection */
-typedef enum {
+typedef enum  {
     ARCH_X86,
     ARCH_X86_64,
     ARCH_ARM,

@@ -1,4 +1,4 @@
-/* boot.S - Kernel entry point using GAS/AT&T syntax */
+/* boot/x86/boot.S - x86 Kernel entry point */
 
 /* Multiboot header constants */
 .set ALIGN,     1<<0
