@@ -1,11 +1,23 @@
 # Common build rules for all architectures
 
 # Common source files
-KERNEL_SOURCES = kernel/meow_kernel.c kernel/meow_util.c advanced/hal/hal.c lib/runtime.c
-COMMON_OBJECTS = $(KERNEL_SOURCES:%.c=$(OBJDIR)/%.o)
+KERNEL_SOURCES = kernel/meow_kernel.c kernel/meow_util.c lib/runtime.c
+HAL_SOURCES = advanced/hal/hal.c
+MEM_SOURCES = advanced/mm/meow_memory.c \
+	      advanced/mm/territory_map.c \
+              advanced/mm/cat_heap.c \
+	      advanced/mm/purr_memory.c
+
+KERNEL_OBJECTS = $(KERNEL_SOURCES:%.c=$(OBJDIR)/%.o)
+HAL_OBJECTS = $(HAL_SOURCES:%.c=$(OBJDIR)/%.o)
+MEM_OBJECTS = $(MEM_SOURCES:%.c=$(OBJDIR)/%.o)
 
 # Combined objects
-ALL_OBJECTS = $(BOOT_OBJECTS) $(COMMON_OBJECTS) $(ARCH_HAL_OBJECTS)
+ALL_OBJECTS = $(BOOT_OBJECTS) \
+	      $(KERNEL_OBJECTS) \
+	      $(HAL_OBJECTS) \
+	      $(ARCH_HAL_OBJECTS) \
+	      $(MEM_OBJECTS)
 
 # Common compiler flags
 CFLAGS_COMMON = -std=gnu99 -ffreestanding -O2 -Wall -Wextra
@@ -33,6 +45,7 @@ dirs:
 	@mkdir -p $(OBJDIR)/boot/$(ARCH)
 	@mkdir -p $(OBJDIR)/kernel
 	@mkdir -p $(OBJDIR)/advanced/hal/$(ARCH)
+	@mkdir -p $(OBJDIR)/advanced/mm
 	@mkdir -p $(BINDIR)
 	@mkdir -p $(ISODIR)/boot/grub
 
@@ -40,7 +53,7 @@ dirs:
 $(OBJDIR)/%.o: %.c
 	@echo "Compiling $< for $(ARCH)..."
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+	$(CC) $(CFLAGS) $(INCLUDES) -g -c $< -o $@
 
 # Assemble ASM source files
 $(OBJDIR)/%.o: %.S
@@ -70,3 +83,4 @@ info:
 	@echo "Build Dir: $(BUILDDIR)"
 	@echo "Kernel Binary: $(KERNEL_BIN)"
 	@echo "Sources: $(words $(ALL_OBJECTS)) object files"
+	

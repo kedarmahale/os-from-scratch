@@ -156,7 +156,7 @@ void interrupt_handler(uint32_t interrupt_number, uint32_t error_code) {
                 break;
                 
             case 1: /* Keyboard IRQ */
-                meow_printf("⌨️Keyboard interrupt\n");
+                meow_printf("⌨️keyboard interrupt\n");
                 break;
                 
             default:

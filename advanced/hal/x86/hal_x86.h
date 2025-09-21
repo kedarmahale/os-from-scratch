@@ -4,6 +4,35 @@
 #define HAL_X86_H
 
 #include "../hal.h"
+#include "../../mm/territory_map.h"
+
+/* Memory detection and management */
+uint32_t detect_memory_from_multiboot(multiboot_info_t* mbi);
+uint32_t get_kernel_memory_usage(void);
+void hal_set_multiboot_info(multiboot_info_t* mbi);
+
+/* Interrupt management */
+void (*hal_interrupt_get_handler(uint8_t interrupt))(void);
+void hal_interrupt_unregister_handler(uint8_t interrupt);
+
+/* Enhanced debug output */
+void hal_debug_printf(const char* format, ...);
+
+/* x86 control register operations */
+void x86_set_cr0(uint32_t cr0);
+void x86_set_cr3(uint32_t cr3);
+
+/* CPU feature detection */
+uint32_t x86_cpuid_supported(void);
+void x86_cpuid(uint32_t leaf, uint32_t* eax, uint32_t* ebx, uint32_t* ecx, uint32_t* edx);
+void x86_get_cpu_vendor(char* vendor);
+
+/* HAL diagnostics and testing */
+void hal_show_system_info(void);
+uint8_t hal_self_test(void);
+uint8_t hal_is_initialized(void);
+void hal_set_initialized(void);
+void hal_emergency_halt(const char* reason);
 
 /* x86-specific initialization functions */
 void x86_gdt_init(void);

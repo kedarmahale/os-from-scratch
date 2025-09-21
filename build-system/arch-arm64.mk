@@ -2,7 +2,7 @@
 
 # ARM64 toolchain
 CC = aarch64-linux-gnu-gcc
-AS = aarch64-linux-gnu-as
+AS = arch64-linux-gnu-as
 LD = aarch64-linux-gnu-ld
 OBJCOPY = aarch64-linux-gnu-objcopy
 
@@ -48,4 +48,4 @@ debug: $(KERNEL_BIN)
 check-deps:
 	@echo "Checking ARM64 build dependencies..."
 	@which $(CC) > /dev/null && echo "  ✅ $(CC)" || echo "  ❌ $(CC) - run: sudo apt install gcc-aarch64-linux-gnu"
-	@which $(QEMU) > /dev/null && echo "  ✅ $(QEMU)" || echo "  ❌ $(QEMU) - run: sudo apt install qemu-system-aarch64"
+	@which $(QEMU) > /dev/null && echo "  ✅ $(QEMU)" || echo "  ❌ $(QEMU) - run: sudo apt install qemu-system-aarch64"a

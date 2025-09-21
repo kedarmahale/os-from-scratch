@@ -1,3 +1,5 @@
+/* Architecture-independent HAL interface */
+
 #ifndef HAL_H
 #define HAL_H
 
@@ -8,9 +10,6 @@
 typedef int bool;
 #define true 1
 #define false 0
-
-
-/* Architecture-independent HAL interface */
 
 /* HAL Initialization */
 void hal_init(void);

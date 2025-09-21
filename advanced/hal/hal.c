@@ -1,7 +1,7 @@
 #include "hal.h"
-
-/* Forward declaration for meow_printf */
-extern void meow_printf(const char* format, ...);
+#include "../mm/territory_map.h"
+#include "../../kernel/meow_kernel.h"
+#include "../../kernel/meow_util.h"
 
 /* Include architecture-specific implementations */
 #ifdef __i386__
@@ -28,19 +28,49 @@ extern void meow_printf(const char* format, ...);
 /* Global HAL state */
 static hal_arch_t current_architecture = CURRENT_ARCH;
 static uint64_t system_ticks = 0;
+static uint8_t hal_initialized = 0;
 
-/* Initialize the HAL */
 void hal_init(void) {
-    meow_printf("HAL: Initializing Hardware Abstraction Layer\n");
-    meow_printf("HAL: Architecture: %s\n", hal_get_arch_string());
+    meow_info("==== Initializing Hardware Abstraction Layer... ====");
     
-    /* Initialize architecture-specific components */
+    /* Get multiboot info from kernel if available */
+    multiboot_info_t* mbi = get_multiboot_info();
+    
+    if (mbi && is_multiboot_info_valid()) {
+        meow_info(" HAL: Using multiboot ino for hardware detection");
+        
+        // Pass multiboot info to x86 HAL for memory detection
+        #ifdef TARGET_X86
+            hal_set_multiboot_info(mbi);
+        #endif
+    } else {
+        meow_warn(" HAL: No valid multiboot info - using defaults!!!");
+    }
+
+    /* Initialize CPU and basic systems */
     hal_cpu_init();
-    hal_memory_init();
-    hal_interrupt_init();
-    hal_timer_init(1000); // 1000 Hz timer
     
-    meow_printf("HAL: Initialization complete\n");
+    /* Initialize memory detection */
+    hal_memory_init();
+    
+    /* Initialize timer */
+    hal_timer_init(1000); /* 1000 Hz timer */
+    
+    /* Initialize interrupts */
+    hal_interrupt_init();
+    
+    /* Mark HAL as initialized */
+    hal_set_initialized();
+    
+    /* Show system information */
+    hal_show_system_info();
+    
+    /* Run self-test */
+    if (!hal_self_test()) {
+        hal_emergency_halt("HAL self-test failed!!!");
+    }
+    
+    meow_info("==== Hardware Abstraction Layer initialized successfully ====");
 }
 
 /* Architecture detection */

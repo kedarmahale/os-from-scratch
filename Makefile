@@ -1,6 +1,11 @@
 # MeowKernel Main Makefile
 # This file orchestrates the build system
 
+# Project information
+PROJECT_NAME = MeowKernel
+VERSION = 0.1.0
+BUILD_DATE = $(shell date '+%Y-%m-%d %H:%M:%S')
+
 # Default architecture
 ARCH ?= x86
 
@@ -50,8 +55,24 @@ help:
 
 info:
 	@echo "=== MeowKernel Build Information ==="
+	@echo "$(PROJECT_NAME) v$(VERSION)"
 	@echo "Current Architecture: $(ARCH)"
 	@echo "Build Directory: $(BUILDDIR)"
 	@echo "Compiler: $(CC)"
 	@echo "Kernel Binary: $(KERNEL_BIN)"
+	@echo "Built on $(BUILD_DATE)"
+	@echo "===================================="
 
+# About MeowKernel
+about:
+	@echo "🐱 ABOUT MEOWKERNEL"
+	@echo "==================="
+	@echo "MeowKernel - The Purr-fect Operating System!"
+	@echo ""
+	@echo "A cat-themed kernel built from scratch"
+	@echo "with love for felines and systems programming."
+	@echo ""
+	@echo "Version: $(VERSION)"
+	@echo "Build Date: $(BUILD_DATE)"
+	@echo ""
+	@echo "🐾 Happy coding with cats!"
