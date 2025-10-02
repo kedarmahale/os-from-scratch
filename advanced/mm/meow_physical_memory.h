@@ -2,8 +2,8 @@
 // PURR MEMORY MANAGER (PHYSICAL MEMORY MANAGER)
 // =============================================================================
 
-#ifndef PURR_MEMORY_H
-#define PURR_MEMORY_H
+#ifndef MEOW_PHYSICAL_MEMORY_H
+#define MEOW_PHYSICAL_MEMORY_H
 
 #include <stdint.h>
 #include <stddef.h>
@@ -43,5 +43,5 @@ uint8_t is_territory_free(void* territory);
 
 void get_purr_memory_stats(uint32_t* total, uint32_t* occupied, uint32_t* free);
 
-#endif // PURR_MEMORY_H
+#endif // MEOW_PHYSICAL_MEMORY_H
 

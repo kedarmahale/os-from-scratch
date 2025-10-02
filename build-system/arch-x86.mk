@@ -13,13 +13,15 @@ LDFLAGS = -nostdlib -m elf_i386
 
 # x86-specific source files
 BOOT_SOURCES = boot/x86/boot.S
-ARCH_HAL_SOURCES = advanced/hal/x86/hal_x86.c \
-                   advanced/hal/x86/gdt.c \
-                   advanced/hal/x86/idt.c \
-                   advanced/hal/x86/pic.c \
-                   advanced/hal/x86/pit.c
-ASM_SOURCES = advanced/hal/x86/gdt_flush.S \
-              advanced/hal/x86/interrupts.S
+ARCH_HAL_SOURCES = advanced/hal/x86/x86_meow_hal.c \
+                   advanced/hal/x86/x86_descriptor_tables.c \
+                   advanced/hal/x86/x86_interrupt_tables.c \
+                   advanced/hal/x86/x86_interrupt_controller.c \
+                   advanced/hal/x86/x86_system_timer.c \
+				   advanced/hal/x86/x86_platform_support.c
+ASM_SOURCES = advanced/hal/x86/x86_gdt_flush.S \
+              advanced/hal/x86/x86_interrupt_handlers.S \
+			  advanced/hal/x86/x86_assembly_functions.S
 
 # Object files
 BOOT_OBJECTS = $(BOOT_SOURCES:%.S=$(OBJDIR)/%.o)

@@ -1,6 +1,6 @@
-#include "territory_map.h"
-#include "meow_memory.h"
-#include "../hal/hal.h"
+#include "meow_memory_mapper.h"
+#include "meow_memory_manager.h"
+#include "../hal/meow_hal_interface.h"
 #include "../../kernel/meow_util.h"
 
 #define KERNEL_START 0x100000      // 1MB - where kernel cats live
@@ -13,7 +13,7 @@ static cat_territory_info_t* largest_safe_territory = NULL;
 
 // Initialize the complete territory mapping system
 void initialize_territory_map(multiboot_info_t* mbi) {
-    meow_debug("  Cats are exploring and mapping territories...");
+    meow_log(MEOW_LOG_MEOW,"  Cats are exploring and mapping territories...");
     
     // Reset territory database
     territory_count = 0;
@@ -38,16 +38,16 @@ void initialize_territory_map(multiboot_info_t* mbi) {
     // Display the complete territory map
     print_territory_map();
     
-    meow_debug("  Territory mapping complete - cats know their domain!");
+    meow_log(MEOW_LOG_MEOW,"  Territory mapping complete - cats know their domain!");
 }
 
 // Parse multiboot memory map into cat territories
 void parse_multiboot_territories(multiboot_info_t* mbi) {
-    meow_debug(" Parsing GRUB's territory reports...");
+    meow_log(MEOW_LOG_MEOW," Parsing GRUB's territory reports...");
     
     // Check if multiboot info has memory map
     if (!(mbi->flags & (1 << 6))) {
-        meow_debug(" No memory map from GRUB - cats are confused!");
+        meow_log(MEOW_LOG_MEOW," No memory map from GRUB - cats are confused!");
         return;
     }
     
@@ -58,7 +58,7 @@ void parse_multiboot_territories(multiboot_info_t* mbi) {
     // Parse each memory region
     while ((uint32_t)mmap < mbi->mmap_addr + mbi->mmap_length) {
         if (territory_count >= MAX_TERRITORIES) {
-            meow_debug(" Too many territories - cats are overwhelmed!");
+            meow_log(MEOW_LOG_MEOW," Too many territories - cats are overwhelmed!");
             break;
         }
         
@@ -102,7 +102,7 @@ void parse_multiboot_territories(multiboot_info_t* mbi) {
                 break;
         }
         
-        meow_printf("🗺️  Territory %d: 0x%llx - 0x%llx (%s)\n",
+        meow_printf("  Territory %d: 0x%llx - 0x%llx (%s)\n",
                    territory_count,
                    territory->start_addr,
                    territory->start_addr + territory->size - 1,
@@ -120,7 +120,7 @@ void parse_multiboot_territories(multiboot_info_t* mbi) {
 
 // Detect and classify available cat territories
 void detect_cat_territories(void) {
-    meow_debug(" Cats are investigating territory safety...");
+    meow_log(MEOW_LOG_MEOW," Cats are investigating territory safety...");
     
     uint32_t safe_territories = 0;
     
@@ -145,7 +145,7 @@ void detect_cat_territories(void) {
 
 // Set up safe boundaries for cat territories
 void setup_territory_boundaries(void) {
-    meow_debug(" Setting up territory boundaries...");
+    meow_log(MEOW_LOG_MEOW," Setting up territory boundaries...");
     
     // Ensure kernel territory is properly marked
     for (uint32_t i = 0; i < territory_count; i++) {
@@ -199,7 +199,7 @@ cat_territory_info_t* get_largest_territory(void) {
 
 // Mark where the kernel cats live (reserved)
 void mark_kernel_territory(void) {
-    meow_debug(" Marking kernel cats' home territory...");
+    meow_log(MEOW_LOG_MEOW," Marking kernel cats' home territory...");
     
     meow_printf(" Kernel territory: 0x%x - 0x%x (size: %d KB)\n",
                KERNEL_START,
@@ -250,7 +250,7 @@ uint32_t get_memory_size_from_territories(void) {
 
 // Reserve special areas for important cat activities
 void setup_reserved_cat_areas(void) {
-    meow_debug(" Setting up special cat activity areas...");
+    meow_log(MEOW_LOG_MEOW," Setting up special cat activity areas...");
     
     // Reserve area for territory bitmap (cats need to track their domain)
     meow_printf(" Territory bitmap area: 0x100000 - 0x108000 (32KB)\n");
@@ -259,7 +259,7 @@ void setup_reserved_cat_areas(void) {
     meow_printf("  Cat heap area: 0x200000 - 0x300000 (1MB)\n");
     
     // These areas are managed by the purr memory manager
-    meow_debug(" Special cat areas reserved and ready!");
+    meow_log(MEOW_LOG_MEOW," Special cat areas reserved and ready!");
 }
 
 // Query functions for other parts of the kernel

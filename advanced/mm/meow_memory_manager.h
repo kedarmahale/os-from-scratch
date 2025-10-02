@@ -5,14 +5,14 @@
 // This header provides the main interface for all MeowKernel memory management
 // It combines territory mapping, physical memory management, and heap allocation
 
-#ifndef MEOW_MEMORY_H
-#define MEOW_MEMORY_H
+#ifndef MEOW_MEMORY_MANAGER_H
+#define MEOW_MEMORY_MANAGER_H
 
 #include <stdint.h>
 #include <stddef.h>
-#include "territory_map.h"  // Include for multiboot structures
-#include "purr_memory.h"    // Include for PMM functions
-#include "cat_heap.h"       // Include for heap functions
+//#include "meow_memory_mapper.h"  // Include for multiboot structures
+#include "meow_physical_memory.h"    // Include for PMM functions
+#include "meow_heap_allocator.h"       // Include for heap functions
 
 
 // =============================================================================
@@ -102,4 +102,4 @@ mm_error_t get_last_mm_error(void);
 const char* get_mm_error_string(mm_error_t error);
 void clear_mm_error(void);
 
-#endif // MEOW_MEMORY_H
+#endif // MEOW_MEMORY_MANAGER_H

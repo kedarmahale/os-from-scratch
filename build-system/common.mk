@@ -1,12 +1,12 @@
 # Common build rules for all architectures
 
 # Common source files
-KERNEL_SOURCES = kernel/meow_kernel.c kernel/meow_util.c lib/runtime.c
-HAL_SOURCES = advanced/hal/hal.c
-MEM_SOURCES = advanced/mm/meow_memory.c \
-	      advanced/mm/territory_map.c \
-              advanced/mm/cat_heap.c \
-	      advanced/mm/purr_memory.c
+KERNEL_SOURCES = kernel/meow_kernel_main.c kernel/meow_util.c lib/runtime.c
+HAL_SOURCES = advanced/hal/meow_hal_manager.c
+MEM_SOURCES = advanced/mm/meow_memory_manager.c \
+	    advanced/mm/meow_memory_mapper.c \
+        advanced/mm/meow_heap_allocator.c \
+	    advanced/mm/meow_physical_memory.c
 
 KERNEL_OBJECTS = $(KERNEL_SOURCES:%.c=$(OBJDIR)/%.o)
 HAL_OBJECTS = $(HAL_SOURCES:%.c=$(OBJDIR)/%.o)
