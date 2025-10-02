@@ -108,101 +108,109 @@ static uint8_t get_cat_bg_color(meow_log_level_t level) {
 /**
  * THE ONLY cat-themed logging implementation - meow_vlog
  */
+static void format_number(char *buffer, int *len, const char *temp, int temp_len,
+                          int width, char pad_char) {
+    int pad = width - temp_len;
+    while (pad-- > 0 && *len < MEOW_UTIL_MAX_PRINTF_LEN - 1)
+        buffer[(*len)++] = pad_char;
+    for (int j = 0; j < temp_len && *len < MEOW_UTIL_MAX_PRINTF_LEN - 1; j++)
+        buffer[(*len)++] = temp[j];
+}
+
 void meow_vlog(meow_log_level_t level, const char* format, va_list args) {
-    /* Filter based on current log level */
-    if (level < current_log_level) {
-        return;
-    }
+    if (level < current_log_level) return;
 
-    /* Save current colors */
-    uint8_t saved_fg = current_fg;
-    uint8_t saved_bg = current_bg;
-
-    /* Set cat-themed colors */
+    uint8_t saved_fg = current_fg, saved_bg = current_bg;
     current_fg = get_cat_color(level);
     current_bg = get_cat_bg_color(level);
 
-    /* Print cat-themed prefix */
-    const char* prefix = get_cat_prefix(level);
-    terminal_writestring(prefix);
+    terminal_writestring(get_cat_prefix(level));
     terminal_writestring(" ");
 
-    /* Print the formatted message */
     char buffer[MEOW_UTIL_MAX_PRINTF_LEN];
     int len = 0;
 
-    /* Simple printf implementation */
-    for (int i = 0; format[i] != '\0' && len < MEOW_UTIL_MAX_PRINTF_LEN - 1; i++) {
+    for (int i = 0; format[i] && len < MEOW_UTIL_MAX_PRINTF_LEN - 1; i++) {
         if (format[i] != '%') {
             buffer[len++] = format[i];
-        } else {
-            i++; /* Move past '%' */
-            switch (format[i]) {
-                case 's': {
-                    char* str = va_arg(args, char*);
-                    if (str == NULL) str = "(null)";
-                    while (*str && len < MEOW_UTIL_MAX_PRINTF_LEN - 1) {
-                        buffer[len++] = *str++;
-                    }
-                    break;
+            continue;
+        }
+        /* Parse flags */
+        i++;
+        char pad_char = ' ';
+        if (format[i] == '0') {
+            pad_char = '0';
+            i++;
+        }
+        /* Parse width */
+        int width = 0;
+        while (format[i] >= '0' && format[i] <= '9') {
+            width = width * 10 + (format[i++] - '0');
+        }
+        /* Parse length */
+        int is_long = 0, is_ll = 0;
+        if (format[i] == 'l') {
+            is_long = 1;
+            i++;
+            if (format[i] == 'l') {
+                is_ll = 1;
+                i++;
+            }
+        }
+
+        char temp[32];
+        int temp_len = 0;
+
+        switch (format[i]) {
+            case 's': {
+                char *str = va_arg(args, char *);
+                if (!str) str = "(null)";
+                while (*str && len < MEOW_UTIL_MAX_PRINTF_LEN - 1) {
+                    buffer[len++] = *str++;
                 }
-                case 'd':
-                case 'i': {
-                    int num = va_arg(args, int);
-                    char temp[16];
-                    int temp_len = meow_int_to_string(num, temp, 10);
-                    for (int j = 0; j < temp_len && len < MEOW_UTIL_MAX_PRINTF_LEN - 1; j++) {
-                        buffer[len++] = temp[j];
-                    }
-                    break;
+                break;
+            }
+            case 'd': case 'i': {
+                long long val = is_ll   ? va_arg(args, long long)
+                                : is_long ? va_arg(args, long)
+                                          : va_arg(args, int);
+                temp_len = meow_longlong_to_string(val, temp, 10);
+                format_number(buffer, &len, temp, temp_len, width, pad_char);
+                break;
+            }
+            case 'u': {
+                unsigned long long val = is_ll   ? va_arg(args, unsigned long long)
+                                         : is_long ? va_arg(args, unsigned long)
+                                                   : va_arg(args, unsigned int);
+                temp_len = meow_uint_to_string((unsigned int)val, temp, 10);
+                format_number(buffer, &len, temp, temp_len, width, pad_char);
+                break;
+            }
+            case 'x': case 'X': {
+                unsigned long long val = is_ll   ? va_arg(args, unsigned long long)
+                                         : is_long ? va_arg(args, unsigned long)
+                                                   : va_arg(args, unsigned int);
+                temp_len = meow_uint_to_string((unsigned int)val, temp, 16);
+                for (int j = 0; j < temp_len; j++) {
+                    if (format[i]=='x' && temp[j]>='A'&&temp[j]<='F')
+                        temp[j] = temp[j]-'A'+'a';
                 }
-                case 'u': {
-                    unsigned int num = va_arg(args, unsigned int);
-                    char temp[16];
-                    int temp_len = meow_uint_to_string(num, temp, 10);
-                    for (int j = 0; j < temp_len && len < MEOW_UTIL_MAX_PRINTF_LEN - 1; j++) {
-                        buffer[len++] = temp[j];
-                    }
-                    break;
-                }
-                case 'x': {
-                    unsigned int num = va_arg(args, unsigned int);
-                    char temp[16];
-                    int temp_len = meow_uint_to_string(num, temp, 16);
-                    /* Convert to lowercase */
-                    for (int j = 0; j < temp_len && len < MEOW_UTIL_MAX_PRINTF_LEN - 1; j++) {
-                        char c = temp[j];
-                        if (c >= 'A' && c <= 'F') c = c - 'A' + 'a';
-                        buffer[len++] = c;
-                    }
-                    break;
-                }
-                case 'X': {
-                    unsigned int num = va_arg(args, unsigned int);
-                    char temp[16];
-                    int temp_len = meow_uint_to_string(num, temp, 16);
-                    for (int j = 0; j < temp_len && len < MEOW_UTIL_MAX_PRINTF_LEN - 1; j++) {
-                        buffer[len++] = temp[j];
-                    }
-                    break;
-                }
-                case 'c': {
-                    char c = (char)va_arg(args, int);
-                    buffer[len++] = c;
-                    break;
-                }
-                case '%': {
-                    buffer[len++] = '%';
-                    break;
-                }
-                default: {
-                    /* Unsupported format specifier */
-                    buffer[len++] = '%';
-                    if (len < MEOW_UTIL_MAX_PRINTF_LEN - 1) {
-                        buffer[len++] = format[i];
-                    }
-                    break;
-                }
+                format_number(buffer, &len, temp, temp_len, width, pad_char);
+                break;
+            }
+            case 'c': {
+                char c = (char)va_arg(args, int);
+                buffer[len++] = c;
+                break;
+            }
+            case '%': {
+                buffer[len++] = '%';
+                break;
+            }
+            default: {
+                buffer[len++] = '%';
+                buffer[len++] = format[i];
+                break;
             }
         }
     }
@@ -211,7 +219,6 @@ void meow_vlog(meow_log_level_t level, const char* format, va_list args) {
     terminal_writestring(buffer);
     terminal_writestring("\n");
 
-    /* Restore colors */
     current_fg = saved_fg;
     current_bg = saved_bg;
 }
@@ -386,78 +393,72 @@ void meow_vprintf(const char* format, va_list args) {
     char buffer[MEOW_UTIL_MAX_PRINTF_LEN];
     int len = 0;
 
-    /* Simple printf implementation */
-    for (int i = 0; format[i] != '\0' && len < MEOW_UTIL_MAX_PRINTF_LEN - 1; i++) {
+    for (int i = 0; format[i] && len < MEOW_UTIL_MAX_PRINTF_LEN - 1; i++) {
         if (format[i] != '%') {
             buffer[len++] = format[i];
-        } else {
-            i++; /* Move past '%' */
-            switch (format[i]) {
-                case 's': {
-                    char* str = va_arg(args, char*);
-                    if (str == NULL) str = "(null)";
-                    while (*str && len < MEOW_UTIL_MAX_PRINTF_LEN - 1) {
-                        buffer[len++] = *str++;
-                    }
-                    break;
+            continue;
+        }
+        i++;
+        char pad_char = ' ';
+        if (format[i]=='0') { pad_char='0'; i++; }
+        int width = 0;
+        while (format[i]>='0'&&format[i]<='9')
+            width = width*10 + (format[i++]-'0');
+
+        int is_long=0,is_ll=0;
+        if (format[i]=='l'){ is_long=1; i++;
+            if (format[i]=='l'){ is_ll=1; i++; }
+        }
+
+        char temp[32]; int temp_len=0;
+        switch(format[i]) {
+            case 's': {
+                char* str=va_arg(args,char*);
+                if (!str) str="(null)";
+                while(*str&&len<MEOW_UTIL_MAX_PRINTF_LEN-1)
+                    buffer[len++]=*str++;
+                break;
+            }
+            case 'd': case 'i': {
+                long long val = is_ll   ? va_arg(args,long long)
+                                : is_long ? va_arg(args,long)
+                                          : va_arg(args,int);
+                temp_len = meow_longlong_to_string(val,temp,10);
+                format_number(buffer,&len,temp,temp_len,width,pad_char);
+                break;
+            }
+            case 'u': {
+                unsigned long long val = is_ll   ? va_arg(args,unsigned long long)
+                                         : is_long ? va_arg(args,unsigned long)
+                                                   : va_arg(args,unsigned int);
+                temp_len = meow_uint_to_string((unsigned int)val,temp,10);
+                format_number(buffer,&len,temp,temp_len,width,pad_char);
+                break;
+            }
+            case 'x': case 'X': {
+                unsigned long long val = is_ll   ? va_arg(args,unsigned long long)
+                                         : is_long ? va_arg(args,unsigned long)
+                                                   : va_arg(args,unsigned int);
+                temp_len = meow_uint_to_string((unsigned int)val,temp,16);
+                for (int j=0;j<temp_len;j++){
+                    if(format[i]=='x'&&temp[j]>='A'&&temp[j]<='F')
+                        temp[j]=temp[j]-'A'+'a';
                 }
-                case 'd':
-                case 'i': {
-                    int num = va_arg(args, int);
-                    char temp[16];
-                    int temp_len = meow_int_to_string(num, temp, 10);
-                    for (int j = 0; j < temp_len && len < MEOW_UTIL_MAX_PRINTF_LEN - 1; j++) {
-                        buffer[len++] = temp[j];
-                    }
-                    break;
-                }
-                case 'u': {
-                    unsigned int num = va_arg(args, unsigned int);
-                    char temp[16];
-                    int temp_len = meow_uint_to_string(num, temp, 10);
-                    for (int j = 0; j < temp_len && len < MEOW_UTIL_MAX_PRINTF_LEN - 1; j++) {
-                        buffer[len++] = temp[j];
-                    }
-                    break;
-                }
-                case 'x': {
-                    unsigned int num = va_arg(args, unsigned int);
-                    char temp[16];
-                    int temp_len = meow_uint_to_string(num, temp, 16);
-                    /* Convert to lowercase */
-                    for (int j = 0; j < temp_len && len < MEOW_UTIL_MAX_PRINTF_LEN - 1; j++) {
-                        char c = temp[j];
-                        if (c >= 'A' && c <= 'F') c = c - 'A' + 'a';
-                        buffer[len++] = c;
-                    }
-                    break;
-                }
-                case 'X': {
-                    unsigned int num = va_arg(args, unsigned int);
-                    char temp[16];
-                    int temp_len = meow_uint_to_string(num, temp, 16);
-                    for (int j = 0; j < temp_len && len < MEOW_UTIL_MAX_PRINTF_LEN - 1; j++) {
-                        buffer[len++] = temp[j];
-                    }
-                    break;
-                }
-                case 'c': {
-                    char c = (char)va_arg(args, int);
-                    buffer[len++] = c;
-                    break;
-                }
-                case '%': {
-                    buffer[len++] = '%';
-                    break;
-                }
-                default: {
-                    /* Unsupported format specifier */
-                    buffer[len++] = '%';
-                    if (len < MEOW_UTIL_MAX_PRINTF_LEN - 1) {
-                        buffer[len++] = format[i];
-                    }
-                    break;
-                }
+                format_number(buffer,&len,temp,temp_len,width,pad_char);
+                break;
+            }
+            case 'c': {
+                buffer[len++] = (char)va_arg(args,int);
+                break;
+            }
+            case '%': {
+                buffer[len++] = '%';
+                break;
+            }
+            default: {
+                buffer[len++] = '%';
+                buffer[len++] = format[i];
+                break;
             }
         }
     }

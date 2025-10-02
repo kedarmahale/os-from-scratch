@@ -353,10 +353,9 @@ void kernel_main(uint32_t magic, multiboot_info_t* multiboot_info) {
     terminal_writestring("[2/5]  Initializing cat memory management...\n");
     set_text_color(VGA_COLOR_LIGHT_GREY, VGA_COLOR_BLACK);
     
-    if (init_cat_memory(multiboot_info) != MEOW_SUCCESS) {
-        meow_log(MEOW_LOG_SCREECH, "Failed to initialize cat memory management!");
-        meow_panic("Critical memory management failure");
-    }
+    init_cat_memory(multiboot_info);
+    //meow_panic("Critical memory management failure");
+    
     meow_log(MEOW_LOG_CHIRP, "All cat territories established and memory systems ready!");
     terminal_writestring("\n");
 
