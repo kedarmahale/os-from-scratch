@@ -1,19 +1,15 @@
-// =============================================================================
-// MEOW MEMORY MANAGEMENT - MAIN INTERFACE
-// =============================================================================
-
-// This header provides the main interface for all MeowKernel memory management
-// It combines territory mapping, physical memory management, and heap allocation
+/* advanced/mm/meow_memory_manager.h - MeowKernel Memory Management interface
+ *
+ * Copyright (c) 2025 MeowKernel Project
+ */
 
 #ifndef MEOW_MEMORY_MANAGER_H
 #define MEOW_MEMORY_MANAGER_H
 
 #include <stdint.h>
 #include <stddef.h>
-//#include "meow_memory_mapper.h"  // Include for multiboot structures
 #include "meow_physical_memory.h"    // Include for PMM functions
-#include "meow_heap_allocator.h"       // Include for heap functions
-
+#include "meow_heap_allocator.h"     // Include for heap functions
 
 // =============================================================================
 // MEMORY MANAGEMENT CONFIGURATION

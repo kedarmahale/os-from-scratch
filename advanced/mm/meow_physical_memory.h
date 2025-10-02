@@ -1,6 +1,8 @@
-// ============================================================================
-// PURR MEMORY MANAGER (PHYSICAL MEMORY MANAGER)
-// =============================================================================
+/* advanced/mm/meow_physical_memory.c - MeowKernel Physical Memory Manager
+ *                                      Interface
+ *
+ * Copyright (c) 2025 MeowKernel Project
+ */
 
 #ifndef MEOW_PHYSICAL_MEMORY_H
 #define MEOW_PHYSICAL_MEMORY_H

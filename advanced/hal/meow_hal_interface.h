@@ -1,6 +1,5 @@
 /* advanced/hal/meow_hal_interface.h - Hardware Abstraction Layer Interface
  *
- * MeowKernel HAL with function pointer abstraction for multi-architecture support
  * Copyright (c) 2025 MeowKernel Project
  */
 
@@ -9,8 +8,8 @@
 
 #include <stdint.h>
 #include <stddef.h>
-#include "../kernel/meow_error_definitions.h"  /* Use centralized error definitions */
-#include "../kernel/meow_multiboot.h" /* Multiboot info structure */
+#include "../kernel/meow_error_definitions.h"
+#include "../kernel/meow_multiboot.h"           /* Multiboot info structure */
 
 /* ============================================================================
  * HAL CONSTANTS AND CONFIGURATION

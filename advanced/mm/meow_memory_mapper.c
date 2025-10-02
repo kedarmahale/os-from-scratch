@@ -1,3 +1,8 @@
+/* advanced/mm/meow_memory_mapper.c - MeowKernel Memory Mapper
+ *
+ * Copyright (c) 2025 MeowKernel Project
+ */
+
 #include "meow_memory_mapper.h"
 #include "meow_memory_manager.h"
 #include "../hal/meow_hal_interface.h"

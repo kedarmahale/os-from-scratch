@@ -1,7 +1,7 @@
-/* advanced/mm/meow_heap_allocator.h - Cat-themed Heap Allocator Interface
+/* advanced/mm/meow_heap_allocator.h - MeowKernel Heap Allocator Interface
  *
- * MeowKernel Memory Management - Secure heap allocator with comprehensive
- * error handling and memory safety features.
+ * MeowKernel Memory Management - Secure heap allocator
+ * 
  * Copyright (c) 2025 MeowKernel Project
  */
 
@@ -269,63 +269,6 @@ meow_error_t meow_heap_compact(void);
  * @return Fragmentation percentage (0.0 = no fragmentation, 100.0 = highly fragmented)
  */
 double meow_heap_get_fragmentation(void);
-
-/* ============================================================================
- * LEGACY COMPATIBILITY FUNCTIONS
- * ============================================================================ */
-
-/* These functions are provided for backward compatibility with existing code */
-
-/**
- * setup_cat_heap - Legacy heap initialization function
- * @deprecated Use meow_heap_init() instead
- */
-__attribute__((deprecated("Use meow_heap_init() instead")))
-static inline void setup_cat_heap(void) {
-    meow_heap_init();
-}
-
-/**
- * meow_alloc - Legacy allocation function
- * @size: Size to allocate
- * @deprecated Use meow_heap_alloc() instead
- */
-__attribute__((deprecated("Use meow_heap_alloc() instead")))
-static inline void* meow_alloc(size_t size) {
-    return meow_heap_alloc(size);
-}
-
-/**
- * meow_free - Legacy free function
- * @ptr: Pointer to free
- * @deprecated Use meow_heap_free() instead
- */
-__attribute__((deprecated("Use meow_heap_free() instead")))
-static inline void meow_free(void* ptr) {
-    meow_heap_free(ptr);
-}
-
-/**
- * meow_realloc - Legacy realloc function
- * @ptr: Pointer to reallocate
- * @size: New size
- * @deprecated Use meow_heap_realloc() instead
- */
-__attribute__((deprecated("Use meow_heap_realloc() instead")))
-static inline void* meow_realloc(void* ptr, size_t size) {
-    return meow_heap_realloc(ptr, size);
-}
-
-/**
- * meow_calloc - Legacy calloc function
- * @count: Number of elements
- * @size: Size of each element
- * @deprecated Use meow_heap_calloc() instead
- */
-__attribute__((deprecated("Use meow_heap_calloc() instead")))
-static inline void* meow_calloc(size_t count, size_t size) {
-    return meow_heap_calloc(count, size);
-}
 
 /* ============================================================================
  * CAT HEAP CONFIGURATION AND TUNING

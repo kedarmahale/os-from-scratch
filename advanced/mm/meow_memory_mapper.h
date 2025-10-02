@@ -1,3 +1,8 @@
+/* advanced/mm/meow_memory_mapper.h - MeowKernel Memory Mapper Interface
+ *
+ * Copyright (c) 2025 MeowKernel Project
+ */
+
 #ifndef MEOW_MEMORY_MAPPER_H
 #define MEOW_MEMORY_MAPPER_H
 

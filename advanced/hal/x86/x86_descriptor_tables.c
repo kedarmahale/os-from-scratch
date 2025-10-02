@@ -1,6 +1,6 @@
-/* advanced/hal/x86/x86_descriptor_tables.c - Global Descriptor Table Implementation (Fixed)
+/* advanced/hal/x86/x86_descriptor_tables.c - Global Descriptor Table 
+ *                                            Implementation
  *
- * Clean GDT implementation with correct logging
  * Copyright (c) 2025 MeowKernel Project
  */
 

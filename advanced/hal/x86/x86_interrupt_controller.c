@@ -1,4 +1,5 @@
-/* advanced/hal/x86/x86_interrupt_controller.c - Programmable Interrupt Controller
+/* advanced/hal/x86/x86_interrupt_controller.c - Programmable Interrupt 
+ *                                               Controller
  *
  * Copyright (c) 2025 MeowKernel Project
  */

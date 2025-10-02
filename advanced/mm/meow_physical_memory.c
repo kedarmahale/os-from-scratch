@@ -1,3 +1,8 @@
+/* advanced/mm/meow_physical_memory.c - MeowKernel Physical Memory Manager
+ *
+ * Copyright (c) 2025 MeowKernel Project
+ */
+
 #include "meow_physical_memory.h"
 #include "meow_memory_manager.h"
 #include "../../kernel/meow_util.h"

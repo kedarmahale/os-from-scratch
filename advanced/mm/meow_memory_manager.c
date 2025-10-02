@@ -1,6 +1,5 @@
-/* advanced/mm/meow_memory_manager.c - MeowKernel Memory Management (Fixed)
+/* advanced/mm/meow_memory_manager.c - MeowKernel Memory Management
  *
- * Clean memory management implementation with correct function names and logging
  * Copyright (c) 2025 MeowKernel Project
  */
 
@@ -241,7 +240,7 @@ void display_memory_summary(void) {
         return;
     }
 
-    meow_printf("\n🐱 MEOWKERNEL MEMORY SUMMARY\n");
+    meow_printf("\n MEOWKERNEL MEMORY SUMMARY\n");
     meow_printf("============================\n");
 
     /* Get and display current statistics */

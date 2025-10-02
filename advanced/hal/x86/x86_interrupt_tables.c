@@ -1,6 +1,5 @@
-/* advanced/hal/x86/x86_interrupt_tables.c - Interrupt Descriptor Table Implementation (Fixed)
+/* advanced/hal/x86/x86_interrupt_tables.c - Interrupt Descriptor Table Implementation
  *
- * Clean IDT implementation with correct logging and external references
  * Copyright (c) 2025 MeowKernel Project
  */
 

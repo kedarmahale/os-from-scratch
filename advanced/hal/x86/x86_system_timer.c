@@ -1,6 +1,5 @@
-/* advanced/hal/x86/x86_system_timer.c - Programmable Interval Timer (Fixed)
+/* advanced/hal/x86/x86_system_timer.c - Programmable Interval Timer
  *
- * Clean PIT implementation with correct function names and logging
  * Copyright (c) 2025 MeowKernel Project
  */
 

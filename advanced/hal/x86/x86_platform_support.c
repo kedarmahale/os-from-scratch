@@ -1,6 +1,5 @@
 /* advanced/hal/x86/x86_platform_support.c - x86 Platform Support Functions
  *
- * C implementations of missing x86 HAL functions
  * Copyright (c) 2025 MeowKernel Project
  */
 

@@ -1,6 +1,5 @@
-/* advanced/mm/meow_heap_allocator.c - Cat-themed Heap Allocator Implementation (Fixed)
+/* advanced/mm/meow_heap_allocator.c - MeowKernel Heap Allocator Implementation
  *
- * Clean heap implementation with NO function redefinitions and correct constants
  * Copyright (c) 2025 MeowKernel Project
  */
 
@@ -111,7 +110,7 @@ meow_error_t meow_heap_shutdown(void) {
 }
 
 /**
- * meow_heap_alloc - Allocate memory from the cat heap (THE ONLY alloc function)
+ * meow_heap_alloc - Allocate memory from the cat heap
  */
 void* meow_heap_alloc(size_t size) {
     /* Input validation */
@@ -196,7 +195,7 @@ void* meow_heap_alloc(size_t size) {
 }
 
 /**
- * meow_heap_free - Free memory back to the cat heap (THE ONLY free function)
+ * meow_heap_free - Free memory back to the cat heap
  */
 meow_error_t meow_heap_free(void* ptr) {
     if (!ptr) {
@@ -248,7 +247,7 @@ meow_error_t meow_heap_free(void* ptr) {
 }
 
 /**
- * meow_heap_realloc - Reallocate memory (THE ONLY realloc function)
+ * meow_heap_realloc - Reallocate memory
  */
 void* meow_heap_realloc(void* ptr, size_t new_size) {
     /* Handle special cases */
@@ -297,7 +296,7 @@ void* meow_heap_realloc(void* ptr, size_t new_size) {
 }
 
 /**
- * meow_heap_calloc - Allocate and zero-initialize memory (THE ONLY calloc function)
+ * meow_heap_calloc - Allocate and zero-initialize memory
  */
 void* meow_heap_calloc(size_t count, size_t size) {
     /* Check for overflow */
@@ -342,7 +341,8 @@ meow_error_t meow_heap_get_stats(cat_heap_stats_t* stats) {
 
     /* Calculate fragmentation */
     if (heap_stats.free_blocks > 0 && heap_stats.free_size > 0) {
-        heap_stats.fragmentation = ((double)heap_stats.free_blocks / (double)(heap_stats.free_size / MEOW_HEAP_MIN_BLOCK_SIZE)) * 100.0;
+        heap_stats.fragmentation = ((double)heap_stats.free_blocks /
+            (double)(heap_stats.free_size / MEOW_HEAP_MIN_BLOCK_SIZE)) * 100.0;
     } else {
         heap_stats.fragmentation = 0.0;
     }
@@ -363,9 +363,12 @@ void meow_heap_print_stats(void) {
 
     meow_printf("\n==== CAT HEAP STATISTICS ====\n");
     meow_printf("===============================\n");
-    meow_printf("Total Size:      %u bytes (%u KB)\n", heap_total_size, heap_total_size / 1024);
-    meow_printf("Used Size:       %u bytes (%u KB)\n", heap_used_size, heap_used_size / 1024);
-    meow_printf("Free Size:       %u bytes (%u KB)\n", heap_free_size, heap_free_size / 1024);
+    meow_printf("Total Size:      %u bytes (%u KB)\n",
+        heap_total_size, heap_total_size / 1024);
+    meow_printf("Used Size:       %u bytes (%u KB)\n", 
+        heap_used_size, heap_used_size / 1024);
+    meow_printf("Free Size:       %u bytes (%u KB)\n",
+        heap_free_size, heap_free_size / 1024);
     meow_printf("Block Count:     %u blocks\n", heap_block_count);
     meow_printf("Free Blocks:     %u blocks\n", heap_stats.free_blocks);
     meow_printf("Occupied Blocks: %u blocks\n", heap_stats.occupied_blocks);
@@ -373,7 +376,8 @@ void meow_heap_print_stats(void) {
     meow_printf("Deallocations:   %u total\n", heap_stats.deallocations);
     meow_printf("Failures:        %u total\n", heap_stats.failures);
     meow_printf("Corruptions:     %u detected\n", heap_stats.corruptions);
-    meow_printf("Utilization:     %u%%\n", heap_total_size > 0 ? (heap_used_size * 100) / heap_total_size : 0);
+    meow_printf("Utilization:     %u%%\n",
+        heap_total_size > 0 ? (heap_used_size * 100) / heap_total_size : 0);
     meow_printf("Fragmentation:   %.2f%%\n", heap_stats.fragmentation);
     meow_printf("================================\n\n");
 }
@@ -401,19 +405,22 @@ meow_error_t meow_heap_validate(void) {
 
         /* Validate block magic */
         if (current->magic != MEOW_HEAP_MAGIC_VALUE) {
-            meow_log(MEOW_LOG_YOWL, "Corrupted magic number at block 0x%08x", (uint32_t)current);
+            meow_log(MEOW_LOG_YOWL, "Corrupted magic number at block 0x%08x",
+                (uint32_t)current);
             corruptions++;
         }
 
         /* Validate block size */
         if (current->size == 0 || current->size > MEOW_HEAP_SIZE_BYTES) {
-            meow_log(MEOW_LOG_YOWL, "Invalid block size %u at 0x%08x", current->size, (uint32_t)current);
+            meow_log(MEOW_LOG_YOWL, "Invalid block size %u at 0x%08x",
+                current->size, (uint32_t)current);
             corruptions++;
         }
 
         /* Validate guard pattern */
         if (current->guard_front != MEOW_HEAP_GUARD_PATTERN) {
-            meow_log(MEOW_LOG_YOWL, "Corrupted guard pattern at 0x%08x", (uint32_t)current);
+            meow_log(MEOW_LOG_YOWL, "Corrupted guard pattern at 0x%08x",
+                (uint32_t)current);
             corruptions++;
         }
 
@@ -428,18 +435,21 @@ meow_error_t meow_heap_validate(void) {
     }
 
     if (blocks_found != heap_block_count) {
-        meow_log(MEOW_LOG_YOWL, "Block count mismatch: found %u, expected %u", blocks_found, heap_block_count);
+        meow_log(MEOW_LOG_YOWL, "Block count mismatch: found %u, expected %u",
+            blocks_found, heap_block_count);
         corruptions++;
     }
 
     heap_stats.corruptions += corruptions;
 
     if (corruptions > 0) {
-        meow_log(MEOW_LOG_YOWL, "Heap validation failed: %u corruptions detected", corruptions);
+        meow_log(MEOW_LOG_YOWL, "Heap validation failed: %u corruptions detected",
+            corruptions);
         return MM_ERROR_HEAP_CORRUPTION;
     }
 
-    meow_log(MEOW_LOG_PURR, "Heap integrity validation passed: %u blocks verified", blocks_found);
+    meow_log(MEOW_LOG_PURR, "Heap integrity validation passed: %u blocks verified",
+        blocks_found);
     return MEOW_SUCCESS;
 }
 
