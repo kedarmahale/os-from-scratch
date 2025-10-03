@@ -14,5 +14,7 @@
 multiboot_info_t* get_multiboot_info(void);
 uint32_t get_multiboot_magic(void);
 uint8_t is_multiboot_info_valid(void);
+void demo_task_main(void* arg);
+void shell_task_main(void* arg);
 
 #endif /* MEOW_KERNEL_INTERFACE_H */

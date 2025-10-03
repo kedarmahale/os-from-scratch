@@ -21,7 +21,9 @@ ARCH_HAL_SOURCES = advanced/hal/x86/x86_meow_hal.c \
 				   advanced/hal/x86/x86_platform_support.c
 ASM_SOURCES = advanced/hal/x86/x86_gdt_flush.S \
               advanced/hal/x86/x86_interrupt_handlers.S \
-			  advanced/hal/x86/x86_assembly_functions.S
+			  advanced/hal/x86/x86_assembly_functions.S \
+			  advanced/process/x86/x86_context_switch.S \
+			  advanced/syscalls/x86/x86_syscall_entry.S
 
 # Object files
 BOOT_OBJECTS = $(BOOT_SOURCES:%.S=$(OBJDIR)/%.o)

@@ -70,8 +70,8 @@ uint8_t validate_memory_range(void* start, size_t size);
 // Debug and diagnostic functions
 void dump_memory_layout(void);
 void print_memory_map(void);
-void test_memory_allocation(void);
-void test_territory_system(void);
+//void test_memory_allocation(void);
+//void test_territory_system(void);
 
 // Memory management configuration
 void set_memory_debug_level(uint8_t level);
