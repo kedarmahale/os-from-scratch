@@ -1,20 +1,20 @@
 # Common build rules for all architectures
 
 # Common source files
-KERNEL_SOURCES = kernel/meow_kernel_main.c kernel/meow_util.c kernel/meow_shell.c lib/runtime.c
-HAL_SOURCES = advanced/hal/meow_hal_manager.c
-MEM_SOURCES = advanced/mm/meow_memory_manager.c \
+KERNEL_SOURCES ?= kernel/meow_kernel_main.c kernel/meow_util.c kernel/meow_shell.c lib/runtime.c
+HAL_SOURCES ?= advanced/hal/meow_hal_manager.c
+MEM_SOURCES ?= advanced/mm/meow_memory_manager.c \
               advanced/mm/meow_memory_mapper.c \
               advanced/mm/meow_heap_allocator.c \
               advanced/mm/meow_physical_memory.c
 
 # Phase 2 additional source files
-DRIVER_SOURCES = advanced/drivers/keyboard/meow_keyboard.c \
+DRIVER_SOURCES ?= advanced/drivers/keyboard/meow_keyboard.c \
                  advanced/drivers/serial/meow_serial.c
-PROCESS_SOURCES = advanced/process/meow_task.c \
+PROCESS_SOURCES ?= advanced/process/meow_task.c \
                   advanced/process/meow_scheduler.c
-SYSCALL_SOURCES = advanced/syscalls/meow_syscall_table.c
-FILESYSTEM_SOURCES = advanced/fs/vfs/meow_vfs.c \
+SYSCALL_SOURCES ?= advanced/syscalls/meow_syscall_table.c
+FILESYSTEM_SOURCES ?= advanced/fs/vfs/meow_vfs.c \
                      advanced/fs/ramfs/meow_ramfs.c \
                      advanced/fs/devfs/meow_devfs.c
 
@@ -47,16 +47,17 @@ CFLAGS_COMMON += -nostdlib -fno-builtin -fno-stack-protector -fno-pic -fno-pie
 INCLUDES = -Ikernel -Iadvanced/hal -Iadvanced
 
 # Build directories
-BUILDDIR = build/$(ARCH)
-OBJDIR = $(BUILDDIR)/obj
-BINDIR = $(BUILDDIR)/bin
-ISODIR = $(BUILDDIR)/iso
+BUILDDIR ?= build/$(ARCH)
+OBJDIR ?= $(BUILDDIR)/obj
+BINDIR ?= $(BUILDDIR)/bin
+ISODIR ?= $(BUILDDIR)/iso
 
 # Target files
-KERNEL_BIN = $(BINDIR)/meowkernel.bin
+KERNEL_BIN ?= $(BINDIR)/meowkernel.bin
+KERNEL_ISO ?= $(BUILDDIR)/meowkernel-$(ARCH).iso
 
 # Common build rules
-.PHONY: all clean iso run debug dirs info check-deps
+.PHONY: all clean iso run debug dirs info check-deps test
 
 all: info dirs $(KERNEL_BIN)
 
@@ -69,6 +70,7 @@ dirs:
 	@mkdir -p $(OBJDIR)/advanced/drivers/keyboard
 	@mkdir -p $(OBJDIR)/advanced/drivers/serial
 	@mkdir -p $(OBJDIR)/advanced/process/x86
+	@mkdir -p $(OBJDIR)/advanced/process/x86_64
 	@mkdir -p $(OBJDIR)/advanced/syscalls/x86
 	@mkdir -p $(OBJDIR)/advanced/fs/vfs
 	@mkdir -p $(OBJDIR)/advanced/fs/ramfs
@@ -80,7 +82,7 @@ dirs:
 $(OBJDIR)/%.o: %.c
 	@echo "Compiling $< for $(ARCH)..."
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS_COMMON) $(CFLAGS) $(INCLUDES) -g -c $< -o $@
+	$(CC) $(CFLAGS_COMMON) $(CFLAGS) $(CFLAGS_EXTRA) $(INCLUDES) -g -c $< -o $@
 
 # Assemble ASM source files
 $(OBJDIR)/%.o: %.S
@@ -110,3 +112,29 @@ info:
 	@echo "Build Dir: $(BUILDDIR)"
 	@echo "Kernel Binary: $(KERNEL_BIN)"
 	@echo "Object files:" $(words $(ALL_OBJECTS))
+
+ifneq ($(strip $(TEST_RUNNER)),)
+
+# x86_64 has a deterministic serial/debug-exit test suite.  It uses a separate
+# build directory so test-only defines can never contaminate a normal image.
+TEST_BUILDDIR = build/$(ARCH)-test
+TEST_ISO = $(TEST_BUILDDIR)/meowkernel-$(ARCH).iso
+
+test:
+	@$(MAKE) --no-print-directory ARCH=$(ARCH) BUILD_VARIANT=test CFLAGS_EXTRA="$(CFLAGS_EXTRA) -DMEOW_TEST_MODE" GRUB_DIR="$(GRUB_DIR)" iso
+	@sh "$(TEST_RUNNER)" "$(TEST_ISO)" "$(GRUB_DIR)"
+
+else
+
+# Baseline smoke test for the legacy targets.
+test: $(KERNEL_ISO)
+	@command -v grub-file >/dev/null 2>&1 || { echo "ERROR: grub-file is required for tests"; exit 1; }
+	@grub-file --is-x86-multiboot $(KERNEL_BIN) || { echo "ERROR: kernel is not Multiboot-compliant"; exit 1; }
+	@echo "Multiboot header: PASS"
+	@xorriso -indev $(KERNEL_ISO) -report_el_torito plain 2>&1 | grep -q 'El Torito catalog' || { echo "ERROR: ISO has no El Torito boot record"; exit 1; }
+	@echo "ISO boot record: PASS"
+	@set +e; timeout 5s $(QEMU) -cdrom $(KERNEL_ISO) $(QEMU_FLAGS) -display none -monitor none -serial none -no-reboot >/dev/null 2>&1; status=$$?; set -e; \
+	if [ $$status -eq 124 ]; then echo "QEMU boot smoke test: PASS (kernel remained running)"; \
+	else echo "QEMU boot smoke test: FAIL (qemu exit status $$status)"; exit 1; fi
+
+endif

@@ -135,7 +135,7 @@ static inline multiboot_mmap_entry_t* multiboot_get_memory_map(const multiboot_i
     if (!multiboot_has_memory_map(mbi)) {
         return NULL;
     }
-    return (multiboot_mmap_entry_t*)mbi->mmap_addr;
+    return (multiboot_mmap_entry_t*)(uintptr_t)mbi->mmap_addr;
 }
 
 /**

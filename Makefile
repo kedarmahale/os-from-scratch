@@ -8,8 +8,20 @@ BUILD_DATE = $(shell date '+%Y-%m-%d %H:%M:%S')
 
 # Default architecture
 ARCH ?= x86
+BUILD_VARIANT ?=
+BUILD_SUFFIX = $(if $(strip $(BUILD_VARIANT)),-$(BUILD_VARIANT),)
 
-# Include architecture-specific build rules
+# These paths are needed while parsing architecture-specific target rules.
+BUILDDIR = build/$(ARCH)$(BUILD_SUFFIX)
+OBJDIR = $(BUILDDIR)/obj
+BINDIR = $(BUILDDIR)/bin
+ISODIR = $(BUILDDIR)/iso
+KERNEL_BIN = $(BINDIR)/meowkernel.bin
+KERNEL_ISO = $(BUILDDIR)/meowkernel-$(ARCH).iso
+
+# Architecture rules must be parsed before common link prerequisites are
+# expanded, so architecture-specific objects are included in the dependency
+# graph.
 include build-system/arch-$(ARCH).mk
 include build-system/common.mk
 
@@ -17,10 +29,13 @@ include build-system/common.mk
 .DEFAULT_GOAL := help
 
 # Architecture shortcuts
-.PHONY: x86 arm64 rpi clean-all help info
+.PHONY: x86 x86_64 arm64 rpi clean-all help info
 
 x86:
 	@$(MAKE) ARCH=x86 all
+
+x86_64:
+	@$(MAKE) ARCH=x86_64 all
 
 arm64:
 	@$(MAKE) ARCH=arm64 all
@@ -37,6 +52,7 @@ help:
 	@echo ""
 	@echo "Architecture Selection:"
 	@echo "  make x86               - Build for x86"
+	@echo "  make x86_64           - Build explicit x86_64 kernel"
 	@echo "  make arm64             - Build for ARM64/Raspberry Pi 5"
 	@echo "  make rpi               - Alias for arm64"
 	@echo ""
@@ -52,16 +68,6 @@ help:
 	@echo "  make clean-all         - Clean all architectures"
 	@echo "  make info              - Show build configuration"
 	@echo "  make check-deps        - Check build dependencies"
-
-info:
-	@echo "=== MeowKernel Build Information ==="
-	@echo "$(PROJECT_NAME) v$(VERSION)"
-	@echo "Current Architecture: $(ARCH)"
-	@echo "Build Directory: $(BUILDDIR)"
-	@echo "Compiler: $(CC)"
-	@echo "Kernel Binary: $(KERNEL_BIN)"
-	@echo "Built on $(BUILD_DATE)"
-	@echo "===================================="
 
 # About MeowKernel
 about:
